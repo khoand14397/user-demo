@@ -10,9 +10,13 @@ import com.khoand.demouser.data.remote.model.SvUser
 import com.khoand.demouser.data.repository.LocalUserRepository
 import com.khoand.demouser.data.repository.SvUserRepository
 import com.khoand.demouser.utils.StateData
+import com.khoand.demouser.utils.svUserToUserLocal
 import kotlinx.coroutines.launch
 
-class UserViewModel(private val userRepository: LocalUserRepository, private val svUserRepository: SvUserRepository) : ViewModel() {
+class UserViewModel(
+    private val userRepository: LocalUserRepository,
+    private val svUserRepository: SvUserRepository
+) : ViewModel() {
     private val _users = MutableLiveData<StateData<List<SvUser>>>()
     val users: LiveData<StateData<List<SvUser>>> get() = _users
 
@@ -31,18 +35,9 @@ class UserViewModel(private val userRepository: LocalUserRepository, private val
         viewModelScope.launch {
             val listUserLocal = arrayListOf<User>()
             listUser.forEach { user ->
-                listUserLocal.add(covertDataSvToLocal(user))
+                listUserLocal.add(svUserToUserLocal(user))
             }
             userRepository.insertAll(listUserLocal)
         }
-    }
-
-    private fun covertDataSvToLocal(svUser: SvUser): User {
-        return User(
-            id = svUser.id,
-            name = svUser.name,
-            email = svUser.email,
-            avatar = svUser.avatar
-        )
     }
 }

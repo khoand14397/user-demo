@@ -2,7 +2,10 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
+    jacoco
 }
+
+apply("jacoco.gradle")
 
 android {
     namespace = "com.khoand.demouser"
@@ -26,6 +29,10 @@ android {
                 "proguard-rules.pro"
             )
         }
+        debug {
+            enableAndroidTestCoverage = true
+            enableUnitTestCoverage = true
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -40,6 +47,10 @@ android {
         dataBinding = true
     }
 
+}
+
+jacoco {
+    toolVersion = "0.8.10"
 }
 
 dependencies {
@@ -63,6 +74,7 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
 
     //Mockk
     testImplementation("io.mockk:mockk:1.13.7")
@@ -79,5 +91,6 @@ dependencies {
     implementation("androidx.room:room-ktx:$roomVersion")
     annotationProcessor("androidx.room:room-compiler:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
 
 }

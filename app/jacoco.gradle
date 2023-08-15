@@ -1,0 +1,27 @@
+task jacocoTestReport(type: JacocoReport) {
+    dependsOn = [
+            'testDevDebugUnitTest',
+            'createDevDebugCoverageReport'
+    ]
+
+    reports {
+        xml.required = false
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+    }
+
+    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*',
+                      '**/Manifest*.*', 'android/**/*.*', '**/*Test*.*', 'android/**/*.*',
+                      '**/*_*Factory.class', '**/*ComponentImpl.class',
+                      '**/*SubComponentBuilder.class', '**/local/**',
+                      '**/remote/**',]
+    def debugTree = fileTree(dir: "$buildDir/tmp/kotlin-classes/debug", excludes: fileFilter)
+    def kotlinDebugTree = fileTree(dir: "$buildDir/tmp/kotlin-classes/devDebug", excludes: fileFilter)
+    def mainSrc = "${project.projectDir}/src/main/java"
+
+    sourceDirectories.setFrom(files([mainSrc]))
+    classDirectories.setFrom(files([debugTree, kotlinDebugTree]))
+    executionData.setFrom(fileTree(dir: project.buildDir, includes: [
+            'outputs/unit_test_code_coverage/**/*.exec'
+    ]))
+}
