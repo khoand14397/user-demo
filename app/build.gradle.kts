@@ -1,8 +1,8 @@
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
+    kotlin("android")
     id("com.google.devtools.ksp")
-    jacoco
+    id ("jacoco")
 }
 
 apply("jacoco.gradle")
@@ -22,16 +22,17 @@ android {
     }
 
     buildTypes {
+        debug {
+            enableAndroidTestCoverage = true
+            enableUnitTestCoverage = true
+        }
+
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-        }
-        debug {
-            enableAndroidTestCoverage = true
-            enableUnitTestCoverage = true
         }
     }
     compileOptions {
@@ -45,6 +46,12 @@ android {
     buildFeatures {
         viewBinding = true
         dataBinding = true
+    }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            isReturnDefaultValues = true
+        }
     }
 
 }

@@ -15,3 +15,7 @@ This project Get User and import to database.
 
 - Mockk
 - Jacoco
+
+## Test coverage report
+![coverage_vm.png](..%2Fcoverage_vm.png)
+![coverage_repository.png](..%2Fcoverage_repository.png)

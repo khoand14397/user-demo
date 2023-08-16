@@ -1,8 +1,7 @@
 package com.khoand.demouser.ui
 
-import androidx.arch.core.executor.DefaultTaskExecutor
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.khoand.demouser.BaseTest
+import com.khoand.demouser.MainCoroutineRule
 import com.khoand.demouser.data.remote.model.SvUser
 import com.khoand.demouser.data.repository.LocalUserRepository
 import com.khoand.demouser.data.repository.SvUserRepository
@@ -13,11 +12,8 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.mockkConstructor
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -25,7 +21,10 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
-class UserViewModelTest : BaseTest() {
+internal class UserViewModelTest {
+
+    @get:Rule
+    val mainCoroutineRule = MainCoroutineRule()
 
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
@@ -39,14 +38,8 @@ class UserViewModelTest : BaseTest() {
     @InjectMockKs
     private lateinit var viewModel: UserViewModel
 
-    override fun before() {
-        super.before()
-        MockKAnnotations.init(this)
-        mockkConstructor(DefaultTaskExecutor::class)
-        coEvery {
-            anyConstructed<DefaultTaskExecutor>().isMainThread
-        } returns true
-    }
+    @Before
+    fun setUp() = MockKAnnotations.init(this, relaxUnitFun = true)
 
     @Test
     fun `test fetchData success`() = runTest {
@@ -56,6 +49,7 @@ class UserViewModelTest : BaseTest() {
 
         // Act
         viewModel.fetchData()
+        advanceUntilIdle()
 
         // Assert
         coVerify { svUserRepository.getUsersFromSever() }
@@ -70,6 +64,7 @@ class UserViewModelTest : BaseTest() {
 
         // Act
         viewModel.fetchData()
+        advanceUntilIdle()
 
         // Assert
         assertEquals(
@@ -86,7 +81,8 @@ class UserViewModelTest : BaseTest() {
 
         // Act
         viewModel.insertDataToDb(svUsers)
-        
+        advanceUntilIdle()
+
         // Assert
         coVerify {
             userRepository.insertAll(localUsers)

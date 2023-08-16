@@ -1,7 +1,7 @@
-task jacocoTestReport(type: JacocoReport) {
+tasks.register('jacocoTestReport', JacocoReport) {
     dependsOn = [
-            'testDevDebugUnitTest',
-            'createDevDebugCoverageReport'
+            'testDebugUnitTest',
+            'createDebugCoverageReport'
     ]
 
     reports {
@@ -12,9 +12,8 @@ task jacocoTestReport(type: JacocoReport) {
 
     def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*',
                       '**/Manifest*.*', 'android/**/*.*', '**/*Test*.*', 'android/**/*.*',
-                      '**/*_*Factory.class', '**/*ComponentImpl.class',
-                      '**/*SubComponentBuilder.class', '**/local/**',
-                      '**/remote/**',]
+                      '**/local/**',
+                      '**/remote/**', '**/repository/**', '**/ui/**',]
     def debugTree = fileTree(dir: "$buildDir/tmp/kotlin-classes/debug", excludes: fileFilter)
     def kotlinDebugTree = fileTree(dir: "$buildDir/tmp/kotlin-classes/devDebug", excludes: fileFilter)
     def mainSrc = "${project.projectDir}/src/main/java"
@@ -22,6 +21,6 @@ task jacocoTestReport(type: JacocoReport) {
     sourceDirectories.setFrom(files([mainSrc]))
     classDirectories.setFrom(files([debugTree, kotlinDebugTree]))
     executionData.setFrom(fileTree(dir: project.buildDir, includes: [
-            'outputs/unit_test_code_coverage/**/*.exec'
+            'jacoco/testDevDebugUnitTest.exec', 'outputs/code-coverage/connected/*coverage.ec'
     ]))
 }

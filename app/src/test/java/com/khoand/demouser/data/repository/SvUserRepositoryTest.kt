@@ -2,21 +2,24 @@ package com.khoand.demouser.data.repository
 
 import com.khoand.demouser.data.remote.api.ApiService
 import com.khoand.demouser.data.remote.model.SvUser
+import io.mockk.MockKAnnotations
 import io.mockk.coEvery
-import io.mockk.mockk
+import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
-class SvUserRepositoryTest {
+internal class SvUserRepositoryTest {
+    @MockK
+    private lateinit var apiService: ApiService
+
+    @InjectMockKs
     private lateinit var repository: SvUserRepository
-    private val apiService: ApiService = mockk()
 
     @Before
-    fun setUp() {
-        repository = SvUserRepository(apiService)
-    }
+    fun setUp() = MockKAnnotations.init(this)
 
     @Test
     fun `test getUsersFromServer with empty list`() = runBlocking {
